@@ -17,8 +17,8 @@ public class roswithcontrol : MonoBehaviour
     {
         ros=ROSConnection.GetOrCreateInstance();
         ros.RegisterPublisher<jointstatemsg>(state);
-        ros.Subscribe<jointstatemsg>(command);//////callback is needed
-        ros.Subscribe<PoseMsg>(target);///callback 
+        ros.Subscribe<jointstatemsg>(command,commandCallback);
+        ros.Subscribe<PoseMsg>(target,targetCallback);
         statemsg=new jointstatemsg{
             name=jointNames,
             position=new double[6],
@@ -40,4 +40,7 @@ public class roswithcontrol : MonoBehaviour
     void Publisher(){
         ros.Publish(state,statemsg);
     } 
+    void commandCallback(jointstatemsg msg){}
+    void targetCallback(PoseMsg msg){}
+    
 }
