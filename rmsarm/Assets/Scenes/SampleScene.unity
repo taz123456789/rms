@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 4242156}
   - component: {fileID: 4242155}
   m_Layer: 0
-  m_Name: joint2 (1)
+  m_Name: joint2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -406,7 +406,7 @@ GameObject:
   - component: {fileID: 213340044}
   - component: {fileID: 213340043}
   m_Layer: 0
-  m_Name: joint1 (1)
+  m_Name: joint1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -742,7 +742,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 385061559}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d9b1d6c2998e17f40907b07aa8cc13d0, type: 3}
   m_Name: 
@@ -2348,6 +2348,7 @@ GameObject:
   - component: {fileID: 1465765696}
   - component: {fileID: 1465765695}
   - component: {fileID: 1465765700}
+  - component: {fileID: 1465765701}
   m_Layer: 0
   m_Name: control
   m_TagString: Untagged
@@ -2372,7 +2373,7 @@ MonoBehaviour:
   eepose: /arm/ee_pose
   target: /arm/ik_target
   armcontrol: {fileID: 1465765700}
-  armBase: {fileID: 213340042}
+  armBase: {fileID: 645324354}
   endeffector: {fileID: 385061563}
   publishRate: 20
 --- !u!65 &1465765696
@@ -2491,6 +2492,28 @@ MonoBehaviour:
     joint: {fileID: 445421424}
     angleZ: 0
     angleX: 0
+--- !u!114 &1465765701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1465765694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7acef0b79454c9b4dae3f8139bc4ba77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Robotics.ROSTCPConnector::Unity.Robotics.ROSTCPConnector.ROSConnection
+  m_RosIPAddress: 127.0.0.1
+  m_RosPort: 10000
+  m_ConnectOnStart: 1
+  m_KeepaliveTime: 1
+  m_NetworkTimeoutSeconds: 2
+  m_SleepTimeSeconds: 0.01
+  m_ShowHUD: 1
+  m_TFTopics:
+  - /tf
+  listenForTFMessages: 1
 --- !u!1001 &1701506595
 PrefabInstance:
   m_ObjectHideFlags: 0
