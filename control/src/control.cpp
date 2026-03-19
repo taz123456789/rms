@@ -9,6 +9,9 @@
 #include <string>
 #include <cmath>
 #include <limits>
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif // !M_PI
 
 class ArmKinematicsNode : public rclcpp::Node
 {
@@ -31,15 +34,26 @@ public:
         this->get_parameter("link_lengths", link_lengths_);
         this->get_parameter("ik_tolerance", ik_tolerance_);
         this->get_parameter("max_iterations", max_iterations_);
+
+        // Publishers
         joint_state_pub_ = this->create_publisher<sensor_msgs::msg::JointState>("/arm/joint_states", 10);
         ee_pose_pub_ = this->create_publisher<geometry_msgs::msg::Pose>("/arm/ee_pose", 10);
-        joint_command_sub_ = this->create_subscription<sensor_msgs::msg::JointState>("/arm/joint_command", 10,std::bind(&ArmKinematicsNode::jointCommandCallback, this, std::placeholders::_1));
-        ik_target_sub_ = this->create_subscription<geometry_msgs::msg::Pose>("/arm/ik_target", 10,std::bind(&ArmKinematicsNode::ikTargetCallback, this, std::placeholders::_1));
+        // ADD THIS LINE - Publisher for joint commands
+        joint_command_pub_ = this->create_publisher<sensor_msgs::msg::JointState>("/arm/joint_command", 10);
+
+        // Subscribers
+        joint_command_sub_ = this->create_subscription<sensor_msgs::msg::JointState>("/arm/joint_command", 10,
+            std::bind(&ArmKinematicsNode::jointCommandCallback, this, std::placeholders::_1));
+        ik_target_sub_ = this->create_subscription<geometry_msgs::msg::Pose>("/arm/ik_target", 10,
+            std::bind(&ArmKinematicsNode::ikTargetCallback, this, std::placeholders::_1));
+
         tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
+
         //20 Hz
         timer_ = this->create_wall_timer(
             std::chrono::milliseconds(50),
             std::bind(&ArmKinematicsNode::timerCallback, this));
+
         //init
         joint_angles_ = Eigen::VectorXd::Zero(6);
         RCLCPP_INFO(this->get_logger(), "Arm Kinematics Node started");
@@ -58,8 +72,13 @@ private:
     Eigen::VectorXd joint_angles_;//z1, x1, z2, x2, z3, x3 rad
     Eigen::Vector3d ee_position_;
     Eigen::Quaterniond ee_orientation_;
+
+    // Publishers and subscribers
     rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr joint_state_pub_;
     rclcpp::Publisher<geometry_msgs::msg::Pose>::SharedPtr ee_pose_pub_;
+    // ADD THIS MEMBER
+    rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr joint_command_pub_;
+
     rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr joint_command_sub_;
     rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr ik_target_sub_;
     rclcpp::TimerBase::SharedPtr timer_;
@@ -85,8 +104,8 @@ private:
     void ikTargetCallback(const geometry_msgs::msg::Pose::SharedPtr msg)
     {
         Eigen::Vector3d target_pos(msg->position.x,
-                                   msg->position.y,
-                                   msg->position.z);
+            msg->position.y,
+            msg->position.z);
         RCLCPP_INFO(this->get_logger(), "ik target: (%.3f, %.3f, %.3f)",
             target_pos.x(), target_pos.y(), target_pos.z());
         // ik
@@ -94,14 +113,36 @@ private:
         bool success = inverseKinematics(target_pos, solution);
         if (success)
         {
+            RCLCPP_INFO(this->get_logger(), "IK Solution: [%.2f, %.2f, %.2f, %.2f, %.2f, %.2f]",
+                solution[0], solution[1], solution[2], solution[3], solution[4], solution[5]);
+
             joint_angles_ = solution;
             forwardKinematics();// recomputing ee pose
-            RCLCPP_INFO(this->get_logger(), "ik solved successfully");
+
+            // ADD THIS - Publish the joint command to move the arm in Unity
+            publishJointCommand();
+
+            RCLCPP_INFO(this->get_logger(), "ik solved successfully and command sent to Unity");
         }
         else
         {
             RCLCPP_WARN(this->get_logger(), "ik failed");
         }
+    }
+
+    // ADD THIS NEW METHOD
+    void publishJointCommand()
+    {
+        auto cmd_msg = sensor_msgs::msg::JointState();
+        cmd_msg.header.stamp = this->get_clock()->now();
+        cmd_msg.name = joint_names_;
+        cmd_msg.position.resize(6);
+        for (size_t i = 0; i < 6; ++i)
+        {
+            cmd_msg.position[i] = joint_angles_[i];
+        }
+        joint_command_pub_->publish(cmd_msg);
+        RCLCPP_DEBUG(this->get_logger(), "Published joint command");
     }
 
     void timerCallback()
@@ -120,12 +161,12 @@ private:
 
         for (int i = 0; i < 3; ++i)
         {
-            double z = joint_angles_[2 * i];    
-            double x = joint_angles_[2 * i + 1]; 
+            double z = joint_angles_[2 * i];
+            double x = joint_angles_[2 * i + 1];
             //about Z then X
             Eigen::Matrix3d Rz = Eigen::AngleAxisd(z, Eigen::Vector3d::UnitZ()).toRotationMatrix();
             Eigen::Matrix3d Rx = Eigen::AngleAxisd(x, Eigen::Vector3d::UnitX()).toRotationMatrix();
-            R = R * Rz * Rx; 
+            R = R * Rz * Rx;
             //vector along X axis
             Eigen::Vector3d link_vec = R * Eigen::Vector3d(link_lengths_[i], 0.0, 0.0);
             pos += link_vec;
@@ -269,7 +310,7 @@ private:
             if (angle < joint_limit_z_min_) angle = joint_limit_z_min_;
             if (angle > joint_limit_z_max_) angle = joint_limit_z_max_;
         }
-        else 
+        else
         {
             if (angle < joint_limit_x_min_) angle = joint_limit_x_min_;
             if (angle > joint_limit_x_max_) angle = joint_limit_x_max_;

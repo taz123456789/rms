@@ -66,7 +66,7 @@ public class roswithcontrol : MonoBehaviour
         // {
         //     ResetToZero();
         // }
-         ros.Publish(command, statemsg);
+         //ros.Publish(command, statemsg);
     }
     
     void UpdateStateMsg()
