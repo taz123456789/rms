@@ -33,6 +33,7 @@ public class roswithcontrol : MonoBehaviour
         //publishers
         ros.RegisterPublisher<JointStateMsg>(state);
         ros.RegisterPublisher<PoseMsg>(eepose);
+        ros.RegisterPublisher<JointStateMsg>(command);
         //subscribers
         ros.Subscribe<JointStateMsg>(command, commandCallback);
         ros.Subscribe<PoseMsg>(target, targetCallback);
@@ -56,15 +57,16 @@ public class roswithcontrol : MonoBehaviour
     void Update()
     {
         UpdateStateMsg();
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            SendIKTarget(new Vector3(1.5f, 4.2f, 0.3f), Quaternion.identity);
-        }
+        // if (Input.GetKeyDown(KeyCode.W))
+        // {
+        //     SendIKTarget(new Vector3(1.5f, 4.2f, 0.3f), Quaternion.identity);
+        // }
         
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            ResetToZero();
-        }
+        // if (Input.GetKeyDown(KeyCode.S))
+        // {
+        //     ResetToZero();
+        // }
+         ros.Publish(command, statemsg);
     }
     
     void UpdateStateMsg()
@@ -110,6 +112,7 @@ public class roswithcontrol : MonoBehaviour
     
     void commandCallback(JointStateMsg msg)
     {
+        Debug.Log("✅ JOINT COMMAND RECEIVED IN UNITY!");
         if (armcontrol == null)
         {
             Debug.LogWarning("controller not assigned");
