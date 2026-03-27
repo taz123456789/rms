@@ -20,8 +20,8 @@ public class roswithcontrol : MonoBehaviour
     //limits
     private const float Z_MIN = 0f;
     private const float Z_MAX = 360f;
-    private const float X_MIN = -60f;
-    private const float X_MAX = 60f;
+    private const float X_MIN = -80f;
+    private const float X_MAX = 80f;
     
     private string[] jointNames = { "j1z", "j1x", "j2z", "j2x", "j3z", "j3x" };
     
@@ -97,18 +97,33 @@ public class roswithcontrol : MonoBehaviour
     }
     
     void PublishEEPose()
+{
+    if (armBase == null || endeffector == null) return;
+    
+    // Get position relative to base
+    Vector3 localPos = armBase.InverseTransformPoint(endeffector.position);
+    Quaternion localRot = Quaternion.Inverse(armBase.rotation) * endeffector.rotation;
+    
+    // Convert Unity coordinate system to ROS
+    // Unity: X right, Y up, Z forward
+    // ROS:   X forward, Y left, Z up
+    // Mapping: Unity (x, y, z) -> ROS (z, -x, y)
+    Vector3 rosPos = new Vector3(localPos.z, -localPos.x, localPos.y);
+    
+    // Convert quaternion (simplified - you may need to adjust based on your robot's orientation)
+    Quaternion rosRot = new Quaternion(-localRot.z, localRot.x, -localRot.y, localRot.w);
+    
+    PoseMsg poseMsg = new PoseMsg
     {
-        if (armBase == null || endeffector == null) return;
-        //Unity pose -> ROS pose 
-        Vector3 localPos = armBase.InverseTransformPoint(endeffector.position);
-        Quaternion localRot = Quaternion.Inverse(armBase.rotation) * endeffector.rotation;
-        PoseMsg poseMsg = new PoseMsg
-        {
-            position = new PointMsg(localPos.x, localPos.y, localPos.z),
-            orientation = new QuaternionMsg(localRot.x, localRot.y, localRot.z, localRot.w)
-        };
-        ros.Publish(eepose, poseMsg);
-    }
+        position = new PointMsg(rosPos.x, rosPos.y, rosPos.z),
+        orientation = new QuaternionMsg(rosRot.x, rosRot.y, rosRot.z, rosRot.w)
+    };
+    
+    ros.Publish(eepose, poseMsg);
+    
+    // Debug output
+    Debug.Log($"Published EE Pose - Unity local: ({localPos.x:F3}, {localPos.y:F3}, {localPos.z:F3}) -> ROS: ({rosPos.x:F3}, {rosPos.y:F3}, {rosPos.z:F3})");
+}
     
     void commandCallback(JointStateMsg msg)
     {
@@ -134,36 +149,37 @@ public class roswithcontrol : MonoBehaviour
         armcontrol.joint3.angleZ = ClampAngle((float)msg.position[4] * Mathf.Rad2Deg, Z_MIN, Z_MAX);
         armcontrol.joint3.angleX = ClampAngle((float)msg.position[5] * Mathf.Rad2Deg, X_MIN, X_MAX);
     }
+  void targetCallback(PoseMsg msg)
+{
+    if (armBase == null) return;
     
-    void targetCallback(PoseMsg msg)
-    {
-        if (armBase == null)
-        {
-            Debug.LogWarning(" base not assigned!");
-            return;
-        }
-        
-        //ROS pose -> Unity
-        Vector3 targetPos = new Vector3(
-            (float)msg.position.x,
-            (float)msg.position.y,
-            (float)msg.position.z
-        );
-        
-        Quaternion targetRot = new Quaternion(
-            (float)msg.orientation.x,
-            (float)msg.orientation.y,
-            (float)msg.orientation.z,
-            (float)msg.orientation.w
-        );
-        // Transform  (ROS base frame -> Unity)
-        Vector3 worldPos = armBase.TransformPoint(targetPos);
-        Quaternion worldRot = armBase.rotation * targetRot;
-        Debug.Log($"Received IK target: {worldPos}");
-        //drawing target
-        Debug.DrawLine(armBase.position, worldPos, Color.green, 2.0f);
-        DrawTargetMarker(worldPos);
-    }
+    // Convert ROS position to Unity local position
+    // ROS (x, y, z) -> Unity local (-y, z, x)
+    Vector3 rosPos = new Vector3((float)msg.position.x, (float)msg.position.y, (float)msg.position.z);
+    Vector3 unityLocalPos = new Vector3(-rosPos.y, rosPos.z, rosPos.x);
+    
+    // Convert to world position
+    Vector3 worldPos = armBase.TransformPoint(unityLocalPos);
+    
+    // Convert ROS quaternion to Unity
+    Quaternion rosRot = new Quaternion(
+        (float)msg.orientation.x,
+        (float)msg.orientation.y,
+        (float)msg.orientation.z,
+        (float)msg.orientation.w
+    );
+    
+    // Convert: ROS quaternion to Unity (inverse of the mapping used in PublishEEPose)
+    Quaternion unityLocalRot = new Quaternion(-rosRot.y, rosRot.z, -rosRot.x, rosRot.w);
+    Quaternion worldRot = armBase.rotation * unityLocalRot;
+    
+    Debug.Log($"Received IK target - ROS: ({rosPos.x:F3}, {rosPos.y:F3}, {rosPos.z:F3}) -> Unity world: ({worldPos.x:F3}, {worldPos.y:F3}, {worldPos.z:F3})");
+    
+    // Draw target marker
+    Debug.DrawLine(armBase.position, worldPos, Color.green, 2.0f);
+    DrawTargetMarker(worldPos);
+}
+
     
     void DrawTargetMarker(Vector3 position)
     {//for now
@@ -173,19 +189,27 @@ public class roswithcontrol : MonoBehaviour
     }
     
     public void SendIKTarget(Vector3 position, Quaternion orientation)
+{
+    if (armBase == null) return;
+    
+    // Convert Unity world position to local position relative to base
+    Vector3 localPos = armBase.InverseTransformPoint(position);
+    Quaternion localRot = Quaternion.Inverse(armBase.rotation) * orientation;
+    
+    // Convert Unity local coordinates to ROS coordinates
+    // Unity (x, y, z) -> ROS (z, -x, y)
+    Vector3 rosPos = new Vector3(localPos.z, -localPos.x, localPos.y);
+    Quaternion rosRot = new Quaternion(-localRot.z, localRot.x, -localRot.y, localRot.w);
+    
+    PoseMsg poseMsg = new PoseMsg
     {
-        if (armBase == null) return;
-        Vector3 localPos = armBase.InverseTransformPoint(position);
-        Quaternion localRot = Quaternion.Inverse(armBase.rotation) * orientation;
-        PoseMsg poseMsg = new PoseMsg
-        {
-            position = new PointMsg(localPos.x, localPos.y, localPos.z),
-            orientation = new QuaternionMsg(localRot.x, localRot.y, localRot.z, localRot.w)
-        };
-        
-        ros.Publish(target, poseMsg);
-        Debug.Log($"IK target sent: ({position.x:F2}, {position.y:F2}, {position.z:F2})");
-    }
+        position = new PointMsg(rosPos.x, rosPos.y, rosPos.z),
+        orientation = new QuaternionMsg(rosRot.x, rosRot.y, rosRot.z, rosRot.w)
+    };
+    
+    ros.Publish(target, poseMsg);
+    Debug.Log($"IK target sent - Unity world: ({position.x:F2}, {position.y:F2}, {position.z:F2}) -> ROS: ({rosPos.x:F2}, {rosPos.y:F2}, {rosPos.z:F2})");
+}
     private float ClampAngle(float angle, float min, float max)
     {
         if (min == 0 && max == 360)
@@ -260,5 +284,6 @@ public class roswithcontrol : MonoBehaviour
             Gizmos.color = Color.red;
             Gizmos.DrawSphere(endeffector.position, 0.05f);
         }
+ 
     }
 }
