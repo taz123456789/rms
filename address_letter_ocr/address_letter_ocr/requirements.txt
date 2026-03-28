@@ -1,0 +1,8 @@
+# OCR Dependencies - Tested and verified versions
+pytesseract==0.3.13
+Pillow==11.3.0
+opencv-python==4.12.0.88
+numpy==2.0.2
+
+# Optional: For better Chinese language support
+# easyocr>=1.7.0
