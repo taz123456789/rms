@@ -5,43 +5,10 @@ import tempfile
 
 import cv2
 import numpy as np
+from scipy.ndimage import uniform_filter, label as scipy_label
+import pytesseract
 
-try:
-    from scipy.ndimage import uniform_filter, label as scipy_label
-    HAS_SCIPY = True
-except ImportError:
-    HAS_SCIPY = False
 
-try:
-    import pytesseract
-    HAS_PYTESSERACT = True
-except ImportError:
-    HAS_PYTESSERACT = False
-
-# Check for tesseract CLI binary
-_TESSERACT_CMD = None
-for _candidate in [
-    "/opt/homebrew/bin/tesseract",
-    "/usr/local/bin/tesseract",
-    "/usr/bin/tesseract",
-]:
-    if os.path.isfile(_candidate):
-        _TESSERACT_CMD = _candidate
-        break
-if _TESSERACT_CMD is None:
-    try:
-        _result = subprocess.run(["which", "tesseract"],
-                                 capture_output=True, text=True)
-        _path = _result.stdout.strip()
-        if _path and os.path.isfile(_path):
-            _TESSERACT_CMD = _path
-    except Exception:
-        pass
-
-HAS_TESSERACT = HAS_PYTESSERACT or (_TESSERACT_CMD is not None)
-
-if not HAS_TESSERACT:
-    print("  [Recognizer] WARNING: tesseract not found, OCR disabled")
 
 
 class LetterRecognizer:
@@ -104,18 +71,14 @@ class LetterRecognizer:
 
         if tesseract_cmd:
             _TESSERACT_CMD = tesseract_cmd
-            if HAS_PYTESSERACT:
-                pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
 
-        if HAS_TESSERACT:
-            backend = "pytesseract" if HAS_PYTESSERACT else "CLI"
+            pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
+
+
+            backend = "pytesseract"
             print("  [Recognizer] Tesseract OCR ready (backend: {})".format(backend))
-        else:
-            print("  [Recognizer] WARNING: Tesseract unavailable")
 
-    # ------------------------------------------------------------------
-    # Adaptive preprocessing pipeline
-    # ------------------------------------------------------------------
+
 
     def _find_envelope_region(self, arr):
         """
@@ -128,8 +91,7 @@ class LetterRecognizer:
         Returns:
             (row_min, row_max, col_min, col_max) or None
         """
-        if not HAS_SCIPY:
-            return None
+
 
         gray = np.mean(arr, axis=2)
         bright_mask = gray > 100
@@ -163,11 +125,7 @@ class LetterRecognizer:
         Returns:
             Binary uint8 array (0/255), text pixels = 255
         """
-        if not HAS_SCIPY:
-            gray = cv2.cvtColor(envelope_arr, cv2.COLOR_BGR2GRAY)
-            _, binary = cv2.threshold(gray, 0, 255,
-                                      cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-            return binary
+
 
         gray = envelope_arr[:, :, 0].astype(float)  # red channel
         local_mean = uniform_filter(gray, size=kernel)
@@ -232,9 +190,6 @@ class LetterRecognizer:
 
         return binary_img[r_start:r_end, c_start:c_end]
 
-    # ------------------------------------------------------------------
-    # Full preprocessing: adaptive pipeline for 3D scene images
-    # ------------------------------------------------------------------
 
     def _preprocess_adaptive(self, image):
         # Convert BGR -> RGB for consistent channel order
@@ -294,7 +249,7 @@ class LetterRecognizer:
 
     def _preprocess(self, image):
         mean_brightness = np.mean(image)
-        if mean_brightness < 150 and HAS_SCIPY:
+        if mean_brightness < 150:
             return self._preprocess_adaptive(image)
         else:
             return self._preprocess_simple(image)
@@ -330,13 +285,11 @@ class LetterRecognizer:
                 os.remove(tmp_path)
 
     def _extract_text(self, image):
-        if not HAS_TESSERACT:
-            return ""
 
-        if HAS_PYTESSERACT:
-            ocr_fn = self._extract_text_pytesseract
-        else:
-            ocr_fn = self._extract_text_cli
+
+
+        ocr_fn = self._extract_text_pytesseract
+
 
         candidates = []
         for psm in [7, 6, 8, 13]:
@@ -415,8 +368,6 @@ class LetterRecognizer:
             if image is None:
                 return None, 0.0
 
-        if not HAS_TESSERACT:
-            return None, 0.0
 
         processed = self._preprocess(image)
 

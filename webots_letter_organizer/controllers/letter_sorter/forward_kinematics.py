@@ -19,9 +19,6 @@ import os
 import yaml
 
 
-# ============================================================================
-# Primitive transforms
-# ============================================================================
 
 def _rotz(theta):
     c, s = np.cos(theta), np.sin(theta)
@@ -113,9 +110,6 @@ class ForwardKinematics:
             J[:, i] = (self.get_position(q_plus) - p0) / delta
         return J
 
-    # -----------------------------------------------------------------------
-    # Collision check  (v6)
-    # -----------------------------------------------------------------------
 
     def collision_check(self, q, bbox):
         """
