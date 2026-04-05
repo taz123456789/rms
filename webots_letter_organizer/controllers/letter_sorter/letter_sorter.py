@@ -11,7 +11,7 @@ from inverse_kinematics import InverseKinematics
 from letter_recognizer import LetterRecognizer
 
 
-# ── Hardware wrappers ──
+
 
 class ArmHW:
     NORMAL_VEL = [1.5, 1.5, 2.0, 2.5, 3.0]
@@ -162,7 +162,7 @@ class SupervisorDelivery:
         return True
 
 
-# ── FSM states ──
+
 class S:
     INIT=0; HOME=1; W_HOME=2; DELIVER=3; W_DELIVER=4
     APPROACH_PICKUP=5; W_APPROACH=6; LOWER=7; W_LOWER=8
@@ -188,7 +188,7 @@ class S:
         SLIDE_IN, W_SLIDE_IN,
     }
 
-# ── SCAN_POSE joint angles ──────────────────────────────────────────
+
 SCAN_POSE_Q = np.array([0.0, -math.pi/2, math.pi/3, math.pi/2, -math.pi/2])
 
 
@@ -253,7 +253,6 @@ class LetterSorterController:
                 print(f"  [Config] error: {e}")
         return d
 
-    # ── helpers ──
 
     def _move(self, pos, downward=False, use_bbox=True, wrist_roll=None):
         bbox = self.shelf_bbox if use_bbox else None
@@ -296,7 +295,7 @@ class LetterSorterController:
                                f"r{self.round}_step{self.idx}_{label}.png"))
         print(f"r{self.round}_step{self.idx}_{label}.png")
 
-    # ── main FSM ──
+
 
     def step(self):
         self.delivery.hold()
@@ -324,7 +323,6 @@ class LetterSorterController:
             self.wc += 1
             if self.wc >= 20: self.st = S.APPROACH_PICKUP
 
-        # ── PICKUP ───────────────────────────────────────────────────
 
         elif s == S.APPROACH_PICKUP:
             self._move(self.tgt["pickup_approach"], downward=True)
@@ -358,7 +356,7 @@ class LetterSorterController:
                 self._snap("02_after_grasp")
                 self.st = S.LIFT
 
-        # ── LIFT — straight up, no rotation ──────────────────────────
+
 
         elif s == S.LIFT:
             print("  [Arm] Lifting letter (upright, no rotation)")
@@ -370,7 +368,7 @@ class LetterSorterController:
             if self._wait():
                 self.st = S.SCAN_POSE
 
-        # ── SCAN_POSE — present letter to forearm camera ─────────────
+
 
         elif s == S.SCAN_POSE:
             print("  [Arm] Moving to SCAN_POSE — presenting letter to camera")
@@ -383,7 +381,7 @@ class LetterSorterController:
             if self._wait(500):
                 self.cd = 0; self.st = S.CAPTURE
 
-        # ── CAPTURE & RECOGNIZE ──────────────────────────────────────
+
 
         elif s == S.CAPTURE:
             self.cd += 1
