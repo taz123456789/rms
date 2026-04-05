@@ -414,7 +414,7 @@ class LetterSorterController:
             if self._wait():
                 self.st = S.FRONT_SLOT
 
-        # ── PLACEMENT ────────────────────────────────────────────────
+
 
         elif s == S.FRONT_SLOT:
             f = self.tgt["slots"][self.letter]["front"]
