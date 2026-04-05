@@ -1,0 +1,91 @@
+# arm_params.yaml
+# DH parameters for the 5-DOF letter organizer arm
+# Extracted from letter_organizer.wbt geometry
+#
+# Joint chain (all in Webots local Z-up frame):
+#   Base (Cylinder h=0.05, r=0.08) at z=0 of robot
+#   J1: shoulder_yaw  — Z-axis rotation, anchor z=0.025
+#   J2: shoulder_pitch — Y-axis rotation, anchor z=0.04 (from J1)
+#   J3: elbow_pitch    — Y-axis rotation, anchor z=0.2  (from J2)
+#   J4: wrist_pitch    — Y-axis rotation, anchor z=0.17 (from J3)
+#   J5: wrist_roll     — Z-axis rotation, anchor z=0.02 (from J4)
+#   Gripper tip        — z=0.025 + 0.035 = 0.06 from J5
+#
+# Modified DH Convention (Craig):
+#   a_i   = distance along X_i from Z_{i-1} to Z_i
+#   alpha = angle about X_i from Z_{i-1} to Z_i
+#   d     = distance along Z_{i-1} from X_{i-1} to X_i
+#   theta = angle about Z_{i-1} from X_{i-1} to X_i (joint variable for revolute)
+
+robot:
+  base_height_above_table: 0.025   # half of base cylinder height
+
+joints:
+  - name: shoulder_yaw
+    motor: shoulder_yaw_motor
+    sensor: shoulder_yaw_sensor
+    type: revolute
+    axis: Z
+    # DH params (Modified DH, Craig convention)
+    alpha: 0.0          # no twist from base frame to J1
+    a: 0.0              # no X offset
+    d: 0.065            # base half (0.025) + shoulder (0.04)
+    theta_offset: 0.0
+    limits: [-3.14159, 3.14159]
+
+  - name: shoulder_pitch
+    motor: shoulder_pitch_motor
+    sensor: shoulder_pitch_sensor
+    type: revolute
+    axis: Y
+    alpha: 1.5707963    # 90 deg: Z-axis → Y-axis rotation (pi/2 about X)
+    a: 0.0
+    d: 0.0
+    theta_offset: 0.0
+    limits: [-1.5708, 1.5708]   # -90 to +90 deg
+
+  - name: elbow_pitch
+    motor: elbow_pitch_motor
+    sensor: elbow_pitch_sensor
+    type: revolute
+    axis: Y
+    alpha: 0.0          # same rotation axis as J2, no twist
+    a: 0.2              # upper arm length
+    d: 0.0
+    theta_offset: 0.0
+    limits: [-2.3562, 2.3562]   # -135 to +135 deg
+
+  - name: wrist_pitch
+    motor: wrist_pitch_motor
+    sensor: wrist_pitch_sensor
+    type: revolute
+    axis: Y
+    alpha: 0.0          # same rotation axis, no twist
+    a: 0.17             # forearm length
+    d: 0.0
+    theta_offset: 0.0
+    limits: [-1.5708, 1.5708]
+
+  - name: wrist_roll
+    motor: wrist_roll_motor
+    sensor: wrist_roll_sensor
+    type: revolute
+    axis: Z
+    alpha: -1.5707963   # -90 deg: Y-axis → Z-axis rotation
+    a: 0.02             # wrist link length
+    d: 0.0
+    theta_offset: 0.0
+    limits: [-3.14159, 3.14159]
+
+gripper:
+  left_motor: gripper_left_motor
+  right_motor: gripper_right_motor
+  left_sensor: gripper_left_sensor
+  right_sensor: gripper_right_sensor
+  open_position: 0.015
+  close_position: 0.0
+  tip_offset: 0.06      # from J5 to gripper fingertip center
+
+# Total arm reach (approximate):
+#   d1=0.065 + a3=0.2 + a4=0.17 + a5=0.02 + tip=0.06 = 0.515 m (fully extended up)
+#   Horizontal reach ≈ 0.2 + 0.17 + 0.02 + 0.06 = 0.45 m

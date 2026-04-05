@@ -1,0 +1,53 @@
+# pigeonhole_map.yaml — v16p (offset grasp on blank area)
+# Coordinates in ROBOT BASE frame (origin = robot base link)
+#
+# v16p changes:
+#   - pickup approach/grasp X offset from -0.20 to -0.234 (34mm toward stamp end)
+#     Gripper fingers land on blank area of letter (x=[20,32]mm from left edge).
+#     Text "To: XXX" starts at x=38mm → 6mm clearance, fully unoccluded.
+#     FOV widened 1.2→1.4 in WBT to keep all corners visible with larger offset.
+#     deliver_world_pos unchanged (-0.20) — envelope center stays on tray center.
+#
+# Letter size: 108×54×0.4mm (1.5× original 72×36mm, thickness unchanged)
+# When upright (rotation 1 0 0 -1.5708):
+#   World X = 108mm (width), World Y = 0.4mm (thickness), World Z = 54mm (height)
+#   Upright half-height = 27mm = 0.027
+#
+# Shelf structure (open-top, arm enters from front):
+#   1. front:    (0.20, slot_y, 0.120) — in front of shelf
+#   2. slide_in: (0.37~0.39, slot_y, 0.120) — horizontal slide into slot
+#   3. RELEASE → open gripper
+#   4. slide_out: back to front position
+
+home: [0.0, 0.0, 0.45]
+
+pickup:
+  approach: [-0.234, 0.0,  0.15]
+  grasp:    [-0.234, 0.0,  0.034]
+
+letter_stack_dz: 0.0
+
+deliver_world_pos: [-0.20, 0.0, 0.809]
+deliver_rotation:  [1.0, 0.0, 0.0, -1.5708]
+
+slots:
+  A:
+    front:    [0.20,  0.24,  0.120]
+    slide_in: [0.30,  0.24,  0.120]
+  B:
+    front:    [0.20,  0.08,  0.120]
+    slide_in: [0.30,  0.08,  0.120]
+  C:
+    front:    [0.20, -0.08,  0.120]
+    slide_in: [0.30, -0.08,  0.120]
+  D:
+    front:    [0.20, -0.24,  0.120]
+    slide_in: [0.30, -0.24,  0.120]
+
+shelf_bbox:
+  x_min: 0.28
+  x_max: 0.50
+  y_min: -0.38
+  y_max: 0.38
+  z_min: -0.165
+  z_max: 0.155

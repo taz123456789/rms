@@ -99,3 +99,4 @@ InitTestScene*.unity*
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 /address_letter_ocr/.idea/
 /address_letter_ocr/__MACOSX/
+/webots_letter_organizer/controllers/letter_sorter/debug_snapshots/

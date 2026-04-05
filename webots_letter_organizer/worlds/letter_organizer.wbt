@@ -1,0 +1,509 @@
+#VRML_SIM R2023b utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/floors/protos/RectangleArena.proto"
+
+WorldInfo {
+  title "Letter Organizer Robot"
+  basicTimeStep 16
+  contactProperties [
+    ContactProperties {
+      material1 "gripper"
+      material2 "letter"
+      coulombFriction [
+        10
+      ]
+      bounce 0
+      softCFM 0.0001
+      softERP 0.9
+    }
+    ContactProperties {
+      material1 "tray_surface"
+      material2 "letter"
+      coulombFriction [
+        0.6
+      ]
+    }
+  ]
+}
+Viewpoint {
+  orientation -0.28 0.20 0.94 1.19
+  position -1.47 -3.92 2.14
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorSize 3 3
+  wallHeight 0.05
+}
+Solid {
+  translation 0 0 0.375
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.6 0.5 0.4
+        roughness 0.7
+        metalness 0
+      }
+      geometry Box {
+        size 1.2 0.8 0.75
+      }
+    }
+  ]
+  name "work_table"
+  boundingObject Box {
+    size 1.2 0.8 0.75
+  }
+}
+Solid {
+  translation -0.20 0 0.76
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 0.2 0.2 0.2
+        roughness 0.6
+        metalness 0.3
+      }
+      geometry Box {
+        size 0.30 0.15 0.02
+      }
+    }
+    Pose {
+      translation -0.14 0 0.025
+      children [
+        Shape {
+          appearance PBRAppearance { baseColor 0.2 0.2 0.2 }
+          geometry Box { size 0.02 0.15 0.05 }
+        }
+      ]
+    }
+    Pose {
+      translation 0 0.07 0.025
+      children [
+        Shape {
+          appearance PBRAppearance { baseColor 0.2 0.2 0.2 }
+          geometry Box { size 0.30 0.01 0.05 }
+        }
+      ]
+    }
+    Pose {
+      translation 0 -0.07 0.025
+      children [
+        Shape {
+          appearance PBRAppearance { baseColor 0.2 0.2 0.2 }
+          geometry Box { size 0.30 0.01 0.05 }
+        }
+      ]
+    }
+  ]
+  name "letter_tray"
+  contactMaterial "tray_surface"
+  boundingObject Box {
+    size 0.30 0.15 0.02
+  }
+}
+DEF LETTER_A Solid {
+  translation -0.50 0.24 0.789
+  rotation 1 0 0 -1.5708
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 1 1 1
+        roughness 0.95
+        metalness 0
+        baseColorMap ImageTexture { url ["../protos/textures/letter_alice.png"] }
+      }
+      geometry Box { size 0.108 0.054 0.0004 }
+    }
+  ]
+  name "letter_A"
+  contactMaterial "letter"
+  boundingObject Box { size 0.108 0.054 0.0004 }
+  physics Physics { density -1  mass 0.002 }
+}
+DEF LETTER_B Solid {
+  translation -0.50 0.08 0.789
+  rotation 1 0 0 -1.5708
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 1 1 1
+        roughness 0.95
+        metalness 0
+        baseColorMap ImageTexture { url ["../protos/textures/letter_bob.png"] }
+      }
+      geometry Box { size 0.108 0.054 0.0004 }
+    }
+  ]
+  name "letter_B"
+  contactMaterial "letter"
+  boundingObject Box { size 0.108 0.054 0.0004 }
+  physics Physics { density -1  mass 0.002 }
+}
+DEF LETTER_C Solid {
+  translation -0.50 -0.08 0.789
+  rotation 1 0 0 -1.5708
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 1 1 1
+        roughness 0.95
+        metalness 0
+        baseColorMap ImageTexture { url ["../protos/textures/letter_charlie.png"] }
+      }
+      geometry Box { size 0.108 0.054 0.0004 }
+    }
+  ]
+  name "letter_C"
+  contactMaterial "letter"
+  boundingObject Box { size 0.108 0.054 0.0004 }
+  physics Physics { density -1  mass 0.002 }
+}
+DEF LETTER_D Solid {
+  translation -0.50 -0.24 0.789
+  rotation 1 0 0 -1.5708
+  children [
+    Shape {
+      appearance PBRAppearance {
+        baseColor 1 1 1
+        roughness 0.95
+        metalness 0
+        baseColorMap ImageTexture { url ["../protos/textures/letter_david.png"] }
+      }
+      geometry Box { size 0.108 0.054 0.0004 }
+    }
+  ]
+  name "letter_D"
+  contactMaterial "letter"
+  boundingObject Box { size 0.108 0.054 0.0004 }
+  physics Physics { density -1  mass 0.002 }
+}
+Solid {
+  translation 0.39 0 0.77
+  children [
+    Pose {
+      translation 0.08 0 0
+      children [
+        Shape {
+          appearance PBRAppearance { baseColor 0.5 0.35 0.2  roughness 0.8  metalness 0 }
+          geometry Box { size 0.02 0.66 0.32 }
+        }
+      ]
+    }
+    Pose {
+      translation 0 0 -0.15
+      children [
+        Shape {
+          appearance PBRAppearance { baseColor 0.5 0.35 0.2 }
+          geometry Box { size 0.18 0.66 0.02 }
+        }
+      ]
+    }
+    Pose {
+      translation 0 0.32 0
+      children [
+        Shape {
+          appearance PBRAppearance { baseColor 0.5 0.35 0.2 }
+          geometry Box { size 0.16 0.02 0.30 }
+        }
+      ]
+    }
+    Pose {
+      translation 0 -0.32 0
+      children [
+        Shape {
+          appearance PBRAppearance { baseColor 0.5 0.35 0.2 }
+          geometry Box { size 0.16 0.02 0.30 }
+        }
+      ]
+    }
+    Solid {
+      translation 0 0.16 0
+      children [
+        DEF DIVIDER_SHAPE Shape {
+          appearance PBRAppearance { baseColor 0.5 0.35 0.2  roughness 0.8  metalness 0 }
+          geometry Box { size 0.16 0.01 0.30 }
+        }
+      ]
+      name "divider_AB"
+      boundingObject Box { size 0.16 0.01 0.30 }
+    }
+    Solid {
+      children [
+        USE DIVIDER_SHAPE
+      ]
+      name "divider_BC"
+      boundingObject Box { size 0.16 0.01 0.30 }
+    }
+    Solid {
+      translation 0 -0.16 0
+      children [
+        USE DIVIDER_SHAPE
+      ]
+      name "divider_CD"
+      boundingObject Box { size 0.16 0.01 0.30 }
+    }
+    Pose {
+      translation -0.02 0.309 0.10
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColorMap ImageTexture { url ["../protos/textures/label_A.png"] }
+            roughness 0.8  metalness 0
+          }
+          geometry Box { size 0.06 0.001 0.04 }
+        }
+      ]
+    }
+    Pose {
+      translation -0.02 0.154 0.10
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColorMap ImageTexture { url ["../protos/textures/label_B.png"] }
+            roughness 0.8  metalness 0
+          }
+          geometry Box { size 0.06 0.001 0.04 }
+        }
+      ]
+    }
+    Pose {
+      translation -0.02 -0.154 0.10
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColorMap ImageTexture { url ["../protos/textures/label_C.png"] }
+            roughness 0.8  metalness 0
+          }
+          geometry Box { size 0.06 0.001 0.04 }
+        }
+      ]
+    }
+    Pose {
+      translation -0.02 -0.309 0.10
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColorMap ImageTexture { url ["../protos/textures/label_D.png"] }
+            roughness 0.8  metalness 0
+          }
+          geometry Box { size 0.06 0.001 0.04 }
+        }
+      ]
+    }
+  ]
+  name "pigeonhole_shelf"
+  boundingObject Group {
+    children [
+      Pose {
+        translation 0.08 0 0
+        children [ Box { size 0.02 0.66 0.32 } ]
+      }
+      Pose {
+        translation 0 0 -0.15
+        children [ Box { size 0.18 0.66 0.02 } ]
+      }
+      Pose {
+        translation 0 0.32 0
+        children [ Box { size 0.16 0.02 0.30 } ]
+      }
+      Pose {
+        translation 0 -0.32 0
+        children [ Box { size 0.16 0.02 0.30 } ]
+      }
+    ]
+  }
+}
+Robot {
+  translation 0 0 0.775
+  rotation 0 0 1 0
+  children [
+    DEF BASE_VISUAL Shape {
+      appearance PBRAppearance { baseColor 0.2 0.2 0.2  roughness 0.4  metalness 0.6 }
+      geometry Cylinder { height 0.05  radius 0.08 }
+    }
+    HingeJoint {
+      jointParameters HingeJointParameters { axis 0 0 1  anchor 0 0 0.025 }
+      device [
+        RotationalMotor { name "shoulder_yaw_motor"  acceleration 5  maxVelocity 1.5  maxTorque 50 }
+        PositionSensor { name "shoulder_yaw_sensor" }
+      ]
+      endPoint Solid {
+        translation 0 0 0.025
+        children [
+          DEF SHOULDER_VISUAL Shape {
+            appearance PBRAppearance { baseColor 0.15 0.35 0.7  roughness 0.5  metalness 0.3 }
+            geometry Cylinder { height 0.08  radius 0.05 }
+          }
+          HingeJoint {
+            jointParameters HingeJointParameters { axis 0 1 0  anchor 0 0 0.04 }
+            device [
+              RotationalMotor { name "shoulder_pitch_motor"  acceleration 4  maxVelocity 1.5  maxTorque 40 }
+              PositionSensor { name "shoulder_pitch_sensor" }
+            ]
+            endPoint Solid {
+              translation 0 0 0.04
+              rotation 0 1 0 0
+              children [
+                DEF UPPER_ARM_VISUAL Pose {
+                  translation 0 0 0.1
+                  children [
+                    Shape {
+                      appearance PBRAppearance { baseColor 0.45 0.45 0.45  roughness 0.5  metalness 0.4 }
+                      geometry Box { size 0.055 0.045 0.2 }
+                    }
+                  ]
+                }
+                HingeJoint {
+                  jointParameters HingeJointParameters { axis 0 1 0  anchor 0 0 0.2 }
+                  device [
+                    RotationalMotor { name "elbow_pitch_motor"  acceleration 6  maxVelocity 2.0  maxTorque 30 }
+                    PositionSensor { name "elbow_pitch_sensor" }
+                  ]
+                  endPoint Solid {
+                    translation 0 0 0.2
+                    rotation 0 1 0 0
+                    children [
+                      DEF FOREARM_VISUAL Pose {
+                        translation 0 0 0.085
+                        children [
+                          Shape {
+                            appearance PBRAppearance { baseColor 0.45 0.45 0.45  roughness 0.5  metalness 0.4 }
+                            geometry Box { size 0.045 0.035 0.17 }
+                          }
+                        ]
+                      }
+                      Pose {
+                        translation 0.04 0 0.01
+                        rotation 0 1 0 -1.570795
+                        children [
+                          Camera {
+                            name "letter_camera"
+                            fieldOfView 1.4
+                            width 640
+                            height 480
+                            near 0.01
+                            far 0.5
+                          }
+                          Shape {
+                            appearance PBRAppearance { baseColor 0.1 0.1 0.1 }
+                            geometry Box { size 0.02 0.02 0.015 }
+                          }
+                        ]
+                      }
+                      HingeJoint {
+                        jointParameters HingeJointParameters { axis 0 1 0  anchor 0 0 0.17 }
+                        device [
+                          RotationalMotor { name "wrist_pitch_motor"  acceleration 8  maxVelocity 2.5 }
+                          PositionSensor { name "wrist_pitch_sensor" }
+                        ]
+                        endPoint Solid {
+                          translation 0 0 0.17
+                          rotation 0 1 0 0
+                          children [
+                            DEF WRIST_PITCH_VISUAL Shape {
+                              appearance PBRAppearance { baseColor 0.15 0.35 0.7  roughness 0.5  metalness 0.3 }
+                              geometry Cylinder { height 0.04  radius 0.022 }
+                            }
+                            HingeJoint {
+                              jointParameters HingeJointParameters { axis 0 0 1  anchor 0 0 0.02 }
+                              device [
+                                RotationalMotor { name "wrist_roll_motor"  acceleration 10  maxVelocity 3.0  maxTorque 5 }
+                                PositionSensor { name "wrist_roll_sensor" }
+                              ]
+                              endPoint Solid {
+                                translation 0 0 0.02
+                                children [
+                                  DEF WRIST_ROLL_VISUAL Shape {
+                                    appearance PBRAppearance { baseColor 0.25 0.25 0.25 }
+                                    geometry Cylinder { height 0.03  radius 0.018 }
+                                  }
+                                  Pose {
+                                    translation 0 0 0.025
+                                    children [
+                                      DEF GRIPPER_BASE_VISUAL Shape {
+                                        appearance PBRAppearance { baseColor 0.4 0.4 0.4  roughness 0.4  metalness 0.5 }
+                                        geometry Box { size 0.05 0.04 0.015 }
+                                      }
+                                      TouchSensor {
+                                        name "pickup_sensor"
+                                        boundingObject Box { size 0.05 0.04 0.015 }
+                                      }
+                                      SliderJoint {
+                                        jointParameters JointParameters { position 0.020  axis 0 1 0 }
+                                        device [
+                                          LinearMotor { name "gripper_left_motor"  maxVelocity 0.06  maxPosition 0.020  maxForce 50 }
+                                          PositionSensor { name "gripper_left_sensor" }
+                                        ]
+                                        endPoint Solid {
+                                          translation 0 0.001 0.035
+                                          children [
+                                            DEF FINGER_VISUAL Shape {
+                                              appearance PBRAppearance { baseColor 1 0.4 0  roughness 0.6  metalness 0.2 }
+                                              geometry Box { size 0.012 0.010 0.050 }
+                                            }
+                                          ]
+                                          name "left_finger"
+                                          contactMaterial "gripper"
+                                          boundingObject USE FINGER_VISUAL
+                                          physics Physics { density -1  mass 0.050 }
+                                        }
+                                      }
+                                      SliderJoint {
+                                        jointParameters JointParameters { position 0.020  axis 0 -1 0 }
+                                        device [
+                                          LinearMotor { name "gripper_right_motor"  maxVelocity 0.06  maxPosition 0.020  maxForce 50 }
+                                          PositionSensor { name "gripper_right_sensor" }
+                                        ]
+                                        endPoint Solid {
+                                          translation 0 -0.001 0.035
+                                          children [
+                                            USE FINGER_VISUAL
+                                          ]
+                                          name "right_finger"
+                                          contactMaterial "gripper"
+                                          boundingObject USE FINGER_VISUAL
+                                          physics Physics { density -1  mass 0.050 }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                                name "wrist_roll"
+                                boundingObject USE WRIST_ROLL_VISUAL
+                                physics Physics { density -1  mass 0.08 }
+                              }
+                            }
+                          ]
+                          name "wrist_pitch"
+                          boundingObject USE WRIST_PITCH_VISUAL
+                          physics Physics { density -1  mass 0.15 }
+                        }
+                      }
+                    ]
+                    name "forearm"
+                    boundingObject USE FOREARM_VISUAL
+                    physics Physics { density -1  mass 0.35 }
+                  }
+                }
+              ]
+              name "upper_arm"
+              boundingObject USE UPPER_ARM_VISUAL
+              physics Physics { density -1  mass 0.5 }
+            }
+          }
+        ]
+        name "shoulder"
+        boundingObject USE SHOULDER_VISUAL
+        physics Physics { density -1  mass 5.0 }
+      }
+    }
+  ]
+  name "letter_organizer_robot"
+  boundingObject USE BASE_VISUAL
+  controller "letter_sorter"
+  supervisor TRUE
+}
