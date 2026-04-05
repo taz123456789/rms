@@ -216,10 +216,6 @@ class LetterSorterController:
         self.qt = None; self.wc = 0; self.cd = 0
         self.round = 1
 
-        print("=" * 60)
-        print("  Letter Sorter v16p-loop — blank-area grasp, FOV 1.4")
-        print("=" * 60)
-
     def _load_cfg(self, path):
         d = {
             "home": [0,0,0.45], "pickup_approach": [-0.234,0,0.15],
@@ -227,10 +223,10 @@ class LetterSorterController:
             "deliver_world_pos": [-0.20,0,0.809],
             "deliver_rotation": [1,0,0,-1.5708],
             "slots": {
-                "A": {"front":[0.20,0.24,0.120],"slide_in":[0.30,0.24,0.029]},
-                "B": {"front":[0.20,0.08,0.120],"slide_in":[0.30,0.08,0.029]},
-                "C": {"front":[0.20,-0.08,0.120],"slide_in":[0.30,-0.08,0.029]},
-                "D": {"front":[0.20,-0.24,0.120],"slide_in":[0.30,-0.24,0.029]},
+                "A": {"front":[0.20,0.24,0.120],"slide_in":[0.30,0.24,0.120]},
+                "B": {"front":[0.20,0.08,0.120],"slide_in":[0.30,0.08,0.120]},
+                "C": {"front":[0.20,-0.08,0.120],"slide_in":[0.30,-0.08,0.120]},
+                "D": {"front":[0.20,-0.24,0.120],"slide_in":[0.30,-0.24,0.120]},
             },
             "shelf_bbox": {"x_min":0.28,"x_max":0.50,"y_min":-0.38,"y_max":0.38,
                            "z_min":-0.165,"z_max":0.155},
