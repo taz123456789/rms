@@ -73,20 +73,6 @@ INIT → HOME → CAMERA_POSE → CAPTURE → RECOGNIZE
 | Multi-start IK | Ensures convergence for all reachable targets |
 | Template matching (not OCR) | No Tesseract dependency; works with generated textures |
 
-## Testing (standalone, without Webots)
-
-```bash
-cd controllers/letter_sorter
-
-# Test FK — verifies zero-config and multiple joint configurations
-python3 forward_kinematics.py
-
-# Test IK — verifies all 10 target positions are reachable (<1mm error)
-python3 inverse_kinematics.py
-
-# Test recognition — verifies all 4 letters identified correctly
-python3 letter_recognizer.py
-```
 
 ## Requirements
 
